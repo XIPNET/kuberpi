@@ -1,0 +1,29 @@
+[all]
+master1 ansible_ssh_host=192.168.1.169
+master2 ansible_ssh_host=192.168.1.146
+worker1 ansible_ssh_host=192.168.1.112
+worker2 ansible_ssh_host=192.168.1.152
+worker3 ansible_ssh_host=192.168.1.170
+lb1 ansible_ssh_host=192.168.1.105
+lb2 ansible_ssh_host=192.168.1.142
+
+[cluster]
+master1
+master2
+worker1
+worker2
+worker3
+
+[loadbalancers]
+lb1
+lb2
+
+[workers]
+worker1
+worker2
+worker3
+
+[all:vars]
+ansible_connection=ssh
+ansible_user=pirate
+ansible_ssh_pass=hypriot

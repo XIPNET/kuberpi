@@ -1,0 +1,71 @@
+---
+- name: Baseline Nodes
+  user: pirate
+  hosts: cluster
+
+  tasks:
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+
+    - name: Install VIM
+      become: true
+      apt:
+        name: vim
+
+    - name: Install NFS Common
+      become: true
+      apt:
+        name: nfs-common
+
+    - name: Install NFS Server
+      become: true
+      apt:
+        name: nfs-server
+
+
+    - name: Install Dphys-Swapfile
+      become: true
+      apt:
+        name: dphys-swapfile
+
+    - name: Reboot
+      become: true
+      reboot:
+
+    - name: Disable Swap_1
+      become: true
+      command: dphys-swapfile swapoff
+    
+    - name: Disable Swap_2
+      become: true
+      command: dphys-swapfile uninstall
+    
+    - name: Disable Swap_3
+      become: true
+      command: systemctl disable dphys-swapfile
+   
+    - name: Set Authorized Keys
+      authorized_key:
+        user: pirate
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+    - name: Copy Cloud Host File
+      become: yes
+      copy:
+        src: ../templates/hosts.debian.tmpl
+        dest: /etc/cloud/templates/hosts.debian.tmpl
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Set Hostnames
+      become: true
+      hostname: name={{ inventory_hostname }}
+
+    - name: Reboot
+      become: true
+      reboot:
