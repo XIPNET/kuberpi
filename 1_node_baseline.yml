@@ -1,7 +1,7 @@
 ---
 - name: Baseline Nodes
   user: pirate
-  hosts: cluster
+  hosts: all
 
   tasks:
     - name: Update and upgrade apt packages
@@ -10,26 +10,17 @@
         upgrade: yes
         update_cache: yes
 
-    - name: Install VIM
+    - name: Install Packages
       become: true
       apt:
-        name: vim
-
-    - name: Install NFS Common
-      become: true
-      apt:
-        name: nfs-common
-
-    - name: Install NFS Server
-      become: true
-      apt:
-        name: nfs-server
-
-
-    - name: Install Dphys-Swapfile
-      become: true
-      apt:
-        name: dphys-swapfile
+        name: "{{ packages }}"
+      vars:
+        packages:
+        - nfs-common
+        - nfs-server
+        - dphys-swapfile
+        - vim
+        - ntp
 
     - name: Reboot
       become: true

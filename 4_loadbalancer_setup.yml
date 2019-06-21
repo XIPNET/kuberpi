@@ -12,6 +12,7 @@
         packages:
         - heartbeat
         - haproxy
+        - haveged
 
     - name: Find Original HAProxy File
       become: true
