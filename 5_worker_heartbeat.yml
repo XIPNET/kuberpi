@@ -16,7 +16,7 @@
       become: yes
       when: inventory_hostname == 'worker1'
       template:
-        src: ../templates/workers/worker1_ha.cf
+        src: templates/workers/worker1_ha.cf
         dest: /etc/ha.d/ha.cf
         owner: root
         group: root
@@ -26,7 +26,7 @@
       become: yes
       when: inventory_hostname == 'worker2'
       template:
-        src: ../templates/workers/worker2_ha.cf
+        src: templates/workers/worker2_ha.cf
         dest: /etc/ha.d/ha.cf
         owner: root
         group: root
@@ -35,7 +35,7 @@
       become: yes
       when: inventory_hostname == 'worker3'
       template:
-        src: ../templates/workers/worker3_ha.cf
+        src: templates/workers/worker3_ha.cf
         dest: /etc/ha.d/ha.cf
         owner: root
         group: root
@@ -43,7 +43,7 @@
     - name: Copy Heartbeat Auth Files
       become: yes
       template:
-        src: ../templates/workers/authkeys
+        src: templates/workers/authkeys
         dest: /etc/ha.d/authkeys
         owner: root
         group: root
@@ -52,7 +52,7 @@
     - name: Copy HAResources Files
       become: yes
       template:
-        src: ../templates/workers/haresources
+        src: templates/workers/haresources
         dest: /etc/ha.d/haresources
 
     - name: Restart Heartbeat

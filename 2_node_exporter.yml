@@ -29,7 +29,7 @@
     - name: Copy systemd File
       become: yes
       template:
-        src: ../templates/nodeexporter.service
+        src: templates/nodeexporter.service
         dest: /lib/systemd/system/nodeexporter.service
 
     - name: Systemctl daemon-reload

@@ -56,7 +56,7 @@
     - name: Copy Cloud Host File
       become: yes
       copy:
-        src: ../templates/hosts.debian.tmpl
+        src: templates/hosts.debian.tmpl
         dest: /etc/cloud/templates/hosts.debian.tmpl
         owner: root
         group: root
