@@ -1,7 +1,7 @@
 ---
 - name: Add Prometheus Node Exporter
   user: pirate
-  hosts: cluster
+  hosts: all 
 
   tasks:
     - name: Retrieve and Unarchive Binary
