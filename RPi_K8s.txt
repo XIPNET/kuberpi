@@ -1,0 +1,83 @@
+--INIT CLUSTER
+sudo kubeadm init --config kubeadm-config.yaml --upload-certs
+
+$ cat kubeadm-config.yaml 
+apiVersion: kubeadm.k8s.io/v1beta1
+kind: ClusterConfiguration
+kubernetesVersion: stable
+controlPlaneEndpoint: "192.168.1.100:6443"
+tokenTTL: "0s"
+
+
+--AFTER INIT
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+--WORKER NODE
+sudo kubeadm join 192.168.1.153:6443 --token 83tsz5.ieu7bx5ehcme4ft6 \
+    --discovery-token-ca-cert-hash sha256:958d00c1cb6c0c3f6130c6d16f8e287fff945f6846da093c73cd32c07bc32310
+
+--MASTER NODE
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+--METALLB
+kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/metallb.yaml
+
+---APPLY CONFIG FILE
+---File: metallb-layer2-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: my-ip-space
+      protocol: layer2
+      addresses:
+      - 192.168.1.240-192.168.1.250
+
+kubectl apply -f metallb-layer2-config.yaml
+
+
+--HELM INSTALL
+curl -L https://git.io/get_helm.sh | bash
+
+--TILLER INSTALL
+kubectl create serviceaccount --namespace kube-system tiller
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+helm init --service-account tiller --tiller-image=jessestuart/tiller:v2.13.1-arm --history-max 200
+
+
+--add other repository
+helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
+
+--connect to NFS for storage
+sudo apt-get install nfs-server
+helm install --debug --set nfs.server=192.168.1.100 --set image.repository=quay.io/external_storage/nfs-client-provisioner-arm --set nfs.path=/mnt/kubernetes stable/nfs-client-provisioner --name=nfs --host=10.109.192.86:44134
+
+--export port 80 for pihole after helm install
+kubectl expose deployment pihole-rpi-pihole-helm --port=80 --target-port=80 --name=webgui --type=LoadBalancer
+
+--Grafana
+helm install stable/grafana --name=grafana --set service.type=LoadBalancer,persistence.enabled=true,persistence.storageClassName=nfs-client --host=10.111.221.14:4413
+kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+add downloaded and extracted plugins to persistent volume /mnt/md0/[name]/plugins, then restart pod
+
+
+--Prometheus Operator
+https://github.com/coreos/prometheus-operator.git
+kubectl create -f bundle.yaml
+
+
+
+
+
+
+
+
+
+

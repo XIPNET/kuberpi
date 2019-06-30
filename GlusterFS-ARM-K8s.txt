@@ -1,0 +1,54 @@
+-GLUSTERFS Storage Class
+-https://github.com/gluster/gluster-kubernetes/blob/master/docs/setup-guide.md
+--Worker node prep
+sudo modprobe dm_snapshot
+sudo modprobe dm_mirror
+sudo modprobe dm_thin_pool
+sudo apt-get install glusterfs-server xfsprogs -y
+
+--http://larmog.github.io/2016/02/22/glusterfs-on-kubernetes-arm/
+sudo mkfs.xfs -f -L brick1 -i size=512 /dev/sda1
+
+sudo mkdir -p /data/brick1
+sudo chmod 666 /etc/fstab
+sudo echo '/dev/sda1 /data/brick1 xfs defaults 1 2' >> /etc/fstab
+sudo mount -a && mount
+
+--Peer nodes
+sudo gluster peer probe worker1
+sudo gluster peer probe worker2
+sudo gluster peer probe worker3
+
+--Verify
+sudo gluster pool list
+
+--Create Volume
+--All nodes
+sudo mkdir /data/brick1/vol1
+--Worker1
+sudo gluster volume create vol1 replica 3 worker1:/data/brick1/vol1 worker2:/data/brick1/vol1 worker3:/data/brick1/vol1
+sudo gluster volume list
+sudo gluster volume start vol1
+sudo gluster volume set vol1 auth.allow *
+sudo gluster volume set vol1 features.shard on
+sudo gluster volume set vol1 features.shard-block-size 5000000
+sudo gluster volume set vol1 nfs.disable off
+sudo gluster volume set vol1 nfs.rpc-auth-allow *.*.*.*
+
+--restart gluster and confirm all online
+sudo systemctl restart glusterfs-server
+sudo gluster volume status vol1
+
+--mount volume and test replication
+sudo mkdir -p /mnt/kubernetes
+sudo chmod 777 /mnt/kubernetes/
+
+--workers
+sudo mount -t glusterfs localhost:/vol1 /mnt/kubernetes
+
+--add to fstab
+localhost:/vol1 /mnt/kubernetes glusterfs defaults,_netdev,noauto,x-systemd.automount 0 0
+
+
+
+
