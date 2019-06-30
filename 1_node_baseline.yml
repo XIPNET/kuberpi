@@ -9,6 +9,7 @@
       apt:
         upgrade: yes
         update_cache: yes
+      tags: update
 
     - name: Install Packages
       become: true
