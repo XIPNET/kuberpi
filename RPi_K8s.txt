@@ -5,14 +5,14 @@ $ cat kubeadm-config.yaml
 apiVersion: kubeadm.k8s.io/v1beta1
 kind: ClusterConfiguration
 kubernetesVersion: stable
-controlPlaneEndpoint: "192.168.1.100:6443"
+controlPlaneEndpoint: "10.10.0.100:6443"
 tokenTTL: "0s"
 
 
 --AFTER INIT
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+mkdir -p /home/pirate/.kube
+sudo cp -i /etc/kubernetes/admin.conf /home/pirate/.kube/config
+sudo chown $(id -u):$(id -g) /home/pirate/.kube/config
 
 
 --WORKER NODE

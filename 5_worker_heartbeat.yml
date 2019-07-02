@@ -1,5 +1,5 @@
 ---
-- name: Loadbalancer Setup
+- name: Worker Setup
   user: pirate
   hosts: workers
   

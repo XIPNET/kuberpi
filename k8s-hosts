@@ -23,6 +23,10 @@ worker1
 worker2
 worker3
 
+[masters]
+master1
+master2
+
 [all:vars]
 ansible_connection=ssh
 ansible_user=pirate
