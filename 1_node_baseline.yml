@@ -26,6 +26,7 @@
     - name: Reboot
       become: true
       reboot:
+      tags: reboot
 
     - name: Disable Swap_1
       become: true
