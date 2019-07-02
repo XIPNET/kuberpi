@@ -1,7 +1,7 @@
 ---
-- name: Master Setup
+- name: Master1 Setup
   user: pirate
-  hosts: masters
+  hosts: master1
   
   tasks:
     - name: Copy kubeadm-config.yaml
@@ -10,7 +10,6 @@
         dest: /home/pirate/kubeadm-config.yaml
 
     - name: Kubeadm init Master1
-      when: inventory_hostname == 'master1'
       become: yes
       command: kubeadm init --config kubeadm-config.yaml --upload-certs
       tags: kubeadm_init
@@ -34,3 +33,13 @@
         owner: pirate
         group: pirate
       tags: kubeadm_config
+
+    - name: Generate join command
+      command: kubeadm token create --print-join-command
+      register: join_command
+      tags: kubeadm_command
+
+    - name: Copy join command to local file
+      local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+      tags: kubeadm_command
+
