@@ -11,7 +11,7 @@
 
     - name: Kubeadm init Master1
       become: yes
-      command: kubeadm init --config kubeadm-config.yaml --upload-certs
+      command: kubeadm init --config /home/pirate/kubeadm-config.yaml --upload-certs
       tags: kubeadm_init
 
     - name: Create a directory if it does not exist
