@@ -34,6 +34,16 @@
         group: pirate
       tags: kubeadm_config
 
+    - name: Copy Weave Network Manifest
+      template:
+        src: templates/masters/weave.sh
+        dest: $HOME/weave.sh
+      tags: kubectl_network_manifest
+
+    - name: Apply Weave Network Manifest
+      command: bash $HOME/weave.sh
+      tags: kubectl_apply_weave
+
     - name: Generate join command
       command: kubeadm token create --print-join-command
       register: join_command
