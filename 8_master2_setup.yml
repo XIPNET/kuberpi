@@ -1,0 +1,25 @@
+---
+- name: Master2 Setup
+  user: pirate
+  hosts: masters
+  
+  tasks:
+    - name: Generate token
+      become: true
+      when: inventory_hostname == 'master1'
+      command: kubeadm token create
+      register: kubeadm_token
+      tags: generate_token
+      
+    - name: Copy Control-Plane Join Manifest
+      when: inventory_hostname == 'master2'
+      template:
+        src: templates/masters/master-join.yaml
+        dest: /home/pirate/master-join.yaml
+      tags: generate_token
+
+    - name: Kubeadm Join
+      become: true
+      when: inventory_hostname == 'master2'
+      command: kubeadm join --config /home/pirate/master-join.yaml
+      tags: kubeadm_join
