@@ -1,3 +1,4 @@
 *.retry
 *.swp
 join-command
+templates/workers/join-command.sh
