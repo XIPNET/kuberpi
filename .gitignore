@@ -2,3 +2,9 @@
 *.swp
 join-command
 templates/workers/join-command.sh
+terraform/ca.crt
+terraform/terraform.crt
+terraform/terraform.key
+terraform/.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
