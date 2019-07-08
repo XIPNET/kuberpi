@@ -74,42 +74,42 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-speaker" {
 
 resource "kubernetes_role" "metallb-role" {
   metadata {
-    name = "config-watcher"
+    name      = "config-watcher"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
       app = "metallb"
     }
   }
-  
+
   rule {
     api_groups = [""]
-    resources = ["configmaps"]
-    verbs = ["get", "list", "watch"]
+    resources  = ["configmaps"]
+    verbs      = ["get", "list", "watch"]
   }
 
   rule {
     api_groups = [""]
-    resources = ["events"]
-    verbs = ["create"]
+    resources  = ["events"]
+    verbs      = ["create"]
   }
 }
 
 resource "kubernetes_cluster_role_binding" "metallb-rolebinding" {
   metadata {
     name = "metallb-system-controller"
-    labels {
+    labels = {
       app = "metallb"
     }
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
-    kind = "ClusterRole"
-    name = "${kubernetes_cluster_role.metallb-clusterrole-controller.metadata.name}"
+    kind      = "ClusterRole"
+    name      = "${kubernetes_cluster_role.metallb-clusterrole-controller.metadata.0.name}"
   }
   subject {
-    kind = "ServiceAccount"
-    name = "controller"
-    namespace = "${kubernetes_namespace.metallb-namespace.metadata.name}"
+    kind      = "ServiceAccount"
+    name      = "controller"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
   }
 }
 
