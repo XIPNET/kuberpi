@@ -214,7 +214,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
             read_only_root_filesystem = "true"
             capabilities {
               drop = ["all"]
-              add = ["new_raw"]
+              add = ["net_raw"]
             }
           }
         }
