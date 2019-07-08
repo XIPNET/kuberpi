@@ -10,7 +10,7 @@ resource "kubernetes_namespace" "metallb-namespace" {
   }
 }
 
-resource "kubernetes_service_account" "metallb-serviceaccount-conttroller" {
+resource "kubernetes_service_account" "metallb-serviceaccount-controller" {
   metadata {
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     name      = "controller"
@@ -94,7 +94,7 @@ resource "kubernetes_role" "metallb-role" {
   }
 }
 
-resource "kubernetes_cluster_role_binding" "metallb-rolebinding" {
+resource "kubernetes_cluster_role_binding" "metallb-rolebinding-controller" {
   metadata {
     name = "metallb-system-controller"
     labels = {
@@ -113,3 +113,44 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding" {
   }
 }
 
+resource "kubernetes_cluster_role_binding" "metallb-rolebinding-speaker" {
+  "metadata" {
+    name = "metallb-system-speaker"
+    labels = {
+      app = "metallb"
+    }
+  }
+  "role_ref" {
+    api_group = "rbac.authorization.k8s.io"
+    kind = "ClusterRole"
+    name = "${kubernetes_cluster_role.metallb-clusterrole-speaker.metadata.0.name}"
+  }
+  "subject" {
+    kind = "ServiceAccount"
+    name = "speaker"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+  }
+}
+
+resource "kubernetes_role_binding" "metallb-rolebinding" {
+  "metadata" {
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    name = "config-watcher"
+    labels = {
+      app = "metallb"
+    }
+  }
+  "role_ref" {
+    api_group = "rbac.authorization.k8s.io"
+    kind = "Role"
+    name = "${kubernetes_role.metallb-role.metadata.0.name}"
+  }
+  "subject" {
+    kind = "ServiceAccount"
+    name = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
+  }
+  "subject" {
+    kind = "ServiceAccount"
+    name = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
+  }
+}
