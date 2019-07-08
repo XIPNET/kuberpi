@@ -122,12 +122,12 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-speaker" {
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
-    kind = "ClusterRole"
-    name = "${kubernetes_cluster_role.metallb-clusterrole-speaker.metadata.0.name}"
+    kind      = "ClusterRole"
+    name      = "${kubernetes_cluster_role.metallb-clusterrole-speaker.metadata.0.name}"
   }
   subject {
-    kind = "ServiceAccount"
-    name = "speaker"
+    kind      = "ServiceAccount"
+    name      = "speaker"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
   }
 }
@@ -135,15 +135,15 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-speaker" {
 resource "kubernetes_role_binding" "metallb-rolebinding" {
   metadata {
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
-    name = "config-watcher"
+    name      = "config-watcher"
     labels = {
       app = "metallb"
     }
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
-    kind = "Role"
-    name = "${kubernetes_role.metallb-role.metadata.0.name}"
+    kind      = "Role"
+    name      = "${kubernetes_role.metallb-role.metadata.0.name}"
   }
   subject {
     kind = "ServiceAccount"
@@ -157,40 +157,40 @@ resource "kubernetes_role_binding" "metallb-rolebinding" {
 
 resource "kubernetes_daemonset" "metallb-daemonset" {
   metadata {
-    name = "speaker"
+    name      = "speaker"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
-      app = "metallb"
+      app       = "metallb"
       component = "speaker"
     }
   }
   spec {
     selector {
       match_labels = {
-        app = "metallb"
+        app       = "metallb"
         component = "speaker"
       }
     }
     template {
       metadata {
         labels = {
-          app = "metallb"
+          app       = "metallb"
           component = "speaker"
         }
         annotations = {
           "prometheus.io/scrape" = "true"
-          "prometheus.io/port" = 7472
+          "prometheus.io/port"   = 7472
         }
       }
       spec {
-        service_account_name = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
+        service_account_name             = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
         termination_grace_period_seconds = 0
-        host_network = "true"
+        host_network                     = "true"
         container {
-          name = "speaker"
-          image = "metallb/speaker:v0.7.3"
+          name              = "speaker"
+          image             = "metallb/speaker:v0.7.3"
           image_pull_policy = "IfNotPresent"
-          args = ["--port=7472", "--config=config"]
+          args              = ["--port=7472", "--config=config"]
           env {
             name = "METALLB_NODE_NAME"
             value_from {
@@ -201,20 +201,20 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
           }
           port {
             container_port = 7472
-            name = "monitoring"
+            name           = "monitoring"
           }
           resources {
             limits {
-              cpu = "100m"
+              cpu    = "100m"
               memory = "100Mi"
             }
           }
           security_context {
             allow_privilege_escalation = "false"
-            read_only_root_filesystem = "true"
+            read_only_root_filesystem  = "true"
             capabilities {
               drop = ["all"]
-              add = ["new_raw"]
+              add  = ["new_raw"]
             }
           }
         }
@@ -226,50 +226,50 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
 resource "kubernetes_deployment" "metallb-deployment" {
   metadata {
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
-    name = "controller"
+    name      = "controller"
     labels = {
-      app = "metallb"
+      app       = "metallb"
       component = "controller"
     }
   }
   spec {
     revision_history_limit = 3
     selector {
-      match_labels {
-        app = "metallb"
+      match_labels = {
+        app       = "metallb"
         component = "controller"
       }
     }
     template {
       metadata {
         labels = {
-          app = "metallb"
+          app       = "metallb"
           component = "controller"
         }
-        annotations {
+        annotations = {
           "prometheus.io/scrape" = "true"
-          "prometheus.io/port" = 7472
+          "prometheus.io/port"   = 7472
         }
       }
       spec {
-        service_account_name = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
+        service_account_name             = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
         termination_grace_period_seconds = 0
         security_context {
           run_as_non_root = "true"
-          run_as_user = 65534 #Nobody
+          run_as_user     = 65534 #Nobody
         }
         container {
-          name = "controller"
-          image = "metallb/controller:v0.7.3"
+          name              = "controller"
+          image             = "metallb/controller:v0.7.3"
           image_pull_policy = "IfNotPresent"
-          args = ["--port=7472", "--config=config"]
+          args              = ["--port=7472", "--config=config"]
           port {
             container_port = 7472
-            name = "monitoring"
+            name           = "monitoring"
           }
           resources {
             limits {
-              cpu = "100m"
+              cpu    = "100m"
               memory = "100Mi"
             }
           }
