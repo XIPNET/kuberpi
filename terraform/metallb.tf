@@ -286,15 +286,3 @@ resource "kubernetes_deployment" "metallb-deployment" {
     }
   }
 }
-
-resource "kubernetes_secret" "metallb-speaker-secret" {
-  metadata {
-    name = "speaker"
-    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
-    annotations = {
-      "kubernetes.io/service-account.name" = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
-    }
-  }
-
-  type = "kubernetes.io/service-account-token"
-}
