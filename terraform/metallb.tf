@@ -222,3 +222,66 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
     }
   }
 }
+
+resource "kubernetes_deployment" "metallb-deployment" {
+  metadata {
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    name = "controller"
+    labels = {
+      app = "metallb"
+      component = "controller"
+    }
+  }
+  spec {
+    revision_history_limit = 3
+    selector {
+      match_labels {
+        app = "metallb"
+        component = "controller"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "metallb"
+          component = "controller"
+        }
+        annotations {
+          "prometheus.io/scrape" = "true"
+          "prometheus.io/port" = 7472
+        }
+      }
+      spec {
+        service_account_name = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
+        termination_grace_period_seconds = 0
+        security_context {
+          run_as_non_root = "true"
+          run_as_user = 65534 #Nobody
+        }
+        container {
+          name = "controller"
+          image = "metallb/controller:v0.7.3"
+          image_pull_policy = "IfNotPresent"
+          args = ["--port=7472", "--config=config"]
+          port {
+            container_port = 7472
+            name = "monitoring"
+          }
+          resources {
+            limits {
+              cpu = "100m"
+              memory = "100Mi"
+            }
+          }
+          security_context {
+            allow_privilege_escalation = "false"
+            capabilities {
+              drop = ["all"]
+            }
+            read_only_root_filesystem = "true"
+          }
+        }
+      }
+    }
+  }
+}
