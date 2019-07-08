@@ -114,18 +114,18 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-controller" {
 }
 
 resource "kubernetes_cluster_role_binding" "metallb-rolebinding-speaker" {
-  "metadata" {
+  metadata {
     name = "metallb-system-speaker"
     labels = {
       app = "metallb"
     }
   }
-  "role_ref" {
+  role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind = "ClusterRole"
     name = "${kubernetes_cluster_role.metallb-clusterrole-speaker.metadata.0.name}"
   }
-  "subject" {
+  subject {
     kind = "ServiceAccount"
     name = "speaker"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
@@ -133,30 +133,30 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-speaker" {
 }
 
 resource "kubernetes_role_binding" "metallb-rolebinding" {
-  "metadata" {
+  metadata {
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     name = "config-watcher"
     labels = {
       app = "metallb"
     }
   }
-  "role_ref" {
+  role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind = "Role"
     name = "${kubernetes_role.metallb-role.metadata.0.name}"
   }
-  "subject" {
+  subject {
     kind = "ServiceAccount"
     name = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
   }
-  "subject" {
+  subject {
     kind = "ServiceAccount"
     name = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
   }
 }
 
 resource "kubernetes_daemonset" "metallb-daemonset" {
-  "metadata" {
+  metadata {
     name = "speaker"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
@@ -164,15 +164,15 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
       component = "speaker"
     }
   }
-  "spec" {
-    "selector" {
+  spec {
+    selector {
       match_labels = {
         app = "metallb"
         component = "speaker"
       }
     }
-    "template" {
-      "metadata" {
+    template {
+      metadata {
         labels = {
           app = "metallb"
           component = "speaker"
@@ -182,7 +182,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
           "prometheus.io/port" = 7472
         }
       }
-      "spec" {
+      spec {
         service_account_name = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
         termination_grace_period_seconds = 0
         host_network = "true"
@@ -190,7 +190,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
           name = "speaker"
           image = "metallb/speaker:v0.7.3"
           image_pull_policy = "IfNotPresent"
-          args = [--port=7472, --config=config]
+          args = ["--port=7472", "--config=config"]
           env {
             name = "METALLB_NODE_NAME"
             value_from {
