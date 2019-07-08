@@ -94,3 +94,22 @@ resource "kubernetes_role" "metallb-role" {
   }
 }
 
+resource "kubernetes_cluster_role_binding" "metallb-rolebinding" {
+  metadata {
+    name = "metallb-system-controller"
+    labels {
+      app = "metallb"
+    }
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind = "ClusterRole"
+    name = "${kubernetes_cluster_role.metallb-clusterrole-controller.metadata.name}"
+  }
+  subject {
+    kind = "ServiceAccount"
+    name = "controller"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.name}"
+  }
+}
+
