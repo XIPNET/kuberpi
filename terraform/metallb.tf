@@ -154,3 +154,71 @@ resource "kubernetes_role_binding" "metallb-rolebinding" {
     name = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
   }
 }
+
+resource "kubernetes_daemonset" "metallb-daemonset" {
+  "metadata" {
+    name = "speaker"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    labels = {
+      app = "metallb"
+      component = "speaker"
+    }
+  }
+  "spec" {
+    "selector" {
+      match_labels = {
+        app = "metallb"
+        component = "speaker"
+      }
+    }
+    "template" {
+      "metadata" {
+        labels = {
+          app = "metallb"
+          component = "speaker"
+        }
+        annotations = {
+          "prometheus.io/scrape" = "true"
+          "prometheus.io/port" = 7472
+        }
+      }
+      "spec" {
+        service_account_name = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
+        termination_grace_period_seconds = 0
+        host_network = "true"
+        container {
+          name = "speaker"
+          image = "metallb/speaker:v0.7.3"
+          image_pull_policy = "IfNotPresent"
+          args = [--port=7472, --config=config]
+          env {
+            name = "METALLB_NODE_NAME"
+            value_from {
+              field_ref {
+                field_path = "spec.nodeName"
+              }
+            }
+          }
+          port {
+            container_port = 7472
+            name = "monitoring"
+          }
+          resources {
+            limits {
+              cpu = "100m"
+              memory = "100Mi"
+            }
+          }
+          security_context {
+            allow_privilege_escalation = "false"
+            read_only_root_filesystem = "true"
+            capabilities {
+              drop = ["all"]
+              add = ["new_raw"]
+            }
+          }
+        }
+      }
+    }
+  }
+}
