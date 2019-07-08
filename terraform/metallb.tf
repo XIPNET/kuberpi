@@ -18,6 +18,7 @@ resource "kubernetes_service_account" "metallb-serviceaccount-controller" {
       app = "metallb"
     }
   }
+
 }
 
 resource "kubernetes_service_account" "metallb-serviceaccount-speaker" {
@@ -284,4 +285,14 @@ resource "kubernetes_deployment" "metallb-deployment" {
       }
     }
   }
+}
+
+resource "kubernetes_secret" "metallb-speaker" {
+  metadata {
+    annotations {
+      "kubernetes.io/service-account.name" = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
+    }
+  }
+
+  type = "kubernetes.io/service-account-token"
 }
