@@ -1,36 +1,3 @@
-resource "kubernetes_namespace" "metallb-namespace" {
-  metadata {
-    annotations = {
-      name = "metallb-system"
-    }
-    labels = {
-      app = "metallb"
-    }
-    name = "metallb-system"
-  }
-}
-
-resource "kubernetes_service_account" "metallb-serviceaccount-controller" {
-  metadata {
-    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
-    name      = "controller"
-    labels = {
-      app = "metallb"
-    }
-  }
-
-}
-
-resource "kubernetes_service_account" "metallb-serviceaccount-speaker" {
-  metadata {
-    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
-    name      = "speaker"
-    labels = {
-      app = "metallb"
-    }
-  }
-}
-
 resource "kubernetes_cluster_role" "metallb-clusterrole-controller" {
   metadata {
     name = "metallb-system-controller"
@@ -76,7 +43,7 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-speaker" {
 resource "kubernetes_role" "metallb-role" {
   metadata {
     name      = "config-watcher"
-    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    namespace = "metallb-system"
     labels = {
       app = "metallb"
     }
@@ -110,7 +77,7 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-controller" {
   subject {
     kind      = "ServiceAccount"
     name      = "controller"
-    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    namespace = "metallb-system"
   }
 }
 
@@ -129,13 +96,13 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-speaker" {
   subject {
     kind      = "ServiceAccount"
     name      = "speaker"
-    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    namespace = "metallb-system"
   }
 }
 
 resource "kubernetes_role_binding" "metallb-rolebinding" {
   metadata {
-    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    namespace = "metallb-system"
     name      = "config-watcher"
     labels = {
       app = "metallb"
@@ -148,18 +115,18 @@ resource "kubernetes_role_binding" "metallb-rolebinding" {
   }
   subject {
     kind = "ServiceAccount"
-    name = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
+    name = "controller"
   }
   subject {
     kind = "ServiceAccount"
-    name = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
+    name = "speaker"
   }
 }
 
 resource "kubernetes_daemonset" "metallb-daemonset" {
   metadata {
     name      = "speaker"
-    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    namespace = "metallb-system"
     labels = {
       app       = "metallb"
       component = "speaker"
@@ -184,7 +151,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
         }
       }
       spec {
-        service_account_name             = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
+        service_account_name             = "speaker"
         termination_grace_period_seconds = 0
         host_network                     = "true"
         container {
@@ -226,7 +193,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
 
 resource "kubernetes_deployment" "metallb-deployment" {
   metadata {
-    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    namespace = "metallb-system"
     name      = "controller"
     labels = {
       app       = "metallb"
@@ -253,7 +220,7 @@ resource "kubernetes_deployment" "metallb-deployment" {
         }
       }
       spec {
-        service_account_name             = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
+        service_account_name             = "controller"
         termination_grace_period_seconds = 0
         security_context {
           run_as_non_root = "true"
