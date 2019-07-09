@@ -289,3 +289,13 @@ resource "kubernetes_deployment" "metallb-deployment" {
     }
   }
 }
+
+resource "kubernetes_config_map" "metallb-configmap" {
+  metadata {
+    name = "config"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+  }
+  data = {
+    config = "${file(${path.module}/metallb-config.yaml)}"
+  }
+}
