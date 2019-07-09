@@ -12,17 +12,17 @@ resource "kubernetes_service_account" "metallb-serviceaccount-controller" {
     name = "controller"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
-      app = "${kubernetes_namespace.metallb-namespace.metadata.labels.app}"
+      app = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
     }
   }
 }
 
 resource "kubernetes_service_account" "metallb-serviceaccount-speaker" {
   metadata {
-    name = speaker
+    name = "speaker"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
-      app = "metallb"
+      app = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
     }
   }
 }
@@ -31,8 +31,8 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-controller" {
   metadata {
     name = "metallb-system-controller"
     labels = {
-      app       = "metallb"
-      component = "controller"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      component = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
     }
   }
 
@@ -59,8 +59,8 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-speaker" {
   metadata {
     name = "metallb-system-speaker"
     labels = {
-      app       = "metallb"
-      component = "speaker"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      component = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
     }
   }
 
@@ -74,9 +74,9 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-speaker" {
 resource "kubernetes_role" "metallb-role" {
   metadata {
     name      = "config-watcher"
-    namespace = "metallb-system"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
-      app = "metallb"
+      app = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
     }
   }
 
@@ -97,8 +97,8 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-controller" {
   metadata {
     name = "metallb-system-controller"
     labels = {
-      app       = "metallb"
-      component = "controller"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      component = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
     }
   }
   role_ref {
@@ -117,8 +117,8 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-speaker" {
   metadata {
     name = "metallb-system-speaker"
     labels = {
-      app       = "metallb"
-      component = "speaker"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      component = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
     }
   }
   role_ref {
@@ -138,7 +138,7 @@ resource "kubernetes_role_binding" "metallb-rolebinding" {
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     name      = "config-watcher"
     labels = {
-      app = "metallb"
+      app = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
     }
   }
   role_ref {
@@ -148,35 +148,36 @@ resource "kubernetes_role_binding" "metallb-rolebinding" {
   }
   subject {
     kind = "ServiceAccount"
-    name = "controller"
+    name = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
   }
   subject {
     kind = "ServiceAccount"
-    name = "speaker"
+    name = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
+"
   }
 }
 
 resource "kubernetes_daemonset" "metallb-daemonset" {
   metadata {
-    name      = "speaker"
+    name      = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
-      app       = "metallb"
-      component = "speaker"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      component = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
     }
   }
   spec {
     selector {
       match_labels = {
-        app       = "metallb"
-        component = "speaker"
+        app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+        component = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
       }
     }
     template {
       metadata {
         labels = {
-          app       = "metallb"
-          component = "speaker"
+          app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+          component = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
         }
         annotations = {
           "prometheus.io/scrape" = "true"
@@ -189,7 +190,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
         termination_grace_period_seconds = 0
         host_network                     = "true"
         container {
-          name              = "speaker"
+          name              = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
           image             = "metallb/speaker:v0.7.3"
           image_pull_policy = "IfNotPresent"
           args              = ["--port=7472", "--config=config"]
@@ -228,10 +229,10 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
 resource "kubernetes_deployment" "metallb-deployment" {
   metadata {
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
-    name      = "controller"
+    name      = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
     labels = {
-      app       = "metallb"
-      component = "controller"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      component = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
     }
   }
   spec {
@@ -239,15 +240,15 @@ resource "kubernetes_deployment" "metallb-deployment" {
 
     selector {
       match_labels = {
-        app       = "metallb"
-        component = "controller"
+        app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+        component = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
       }
     }
     template {
       metadata {
         labels = {
-          app       = "metallb"
-          component = "controller"
+          app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+          component = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
         }
         annotations = {
           "prometheus.io/scrape" = "true"
@@ -263,7 +264,7 @@ resource "kubernetes_deployment" "metallb-deployment" {
           run_as_user     = 65534 #Nobody
         }
         container {
-          name              = "controller"
+          name              = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
           image             = "metallb/controller:v0.7.3"
           image_pull_policy = "IfNotPresent"
           args              = ["--port=7472", "--config=config"]
