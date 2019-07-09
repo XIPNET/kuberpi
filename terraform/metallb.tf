@@ -1,3 +1,32 @@
+resource "kubernetes_namespace" "metallb-namespace" {
+  metadata {
+    name = "metallb-system"
+    labels = {
+      app = "metallb"
+    }
+  }
+}
+
+resource "kubernetes_service_account" "metallb-serviceaccount-controller" {
+  metadata {
+    name = "controller"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    labels = {
+      app = "metallb"
+    }
+  }
+}
+
+resource "kubernetes_service_account" "metallb-serviceaccount-speaker" {
+  metadata {
+    name = speaker
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
+    labels = {
+      app = "metallb"
+    }
+  }
+}
+
 resource "kubernetes_cluster_role" "metallb-clusterrole-controller" {
   metadata {
     name = "metallb-system-controller"
