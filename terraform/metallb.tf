@@ -203,6 +203,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
           }
           port {
             container_port = 7472
+            host_port = 7472
             name           = "monitoring"
           }
           resources {
