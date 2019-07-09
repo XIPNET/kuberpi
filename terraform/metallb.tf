@@ -155,6 +155,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
         }
       }
       spec {
+        automount_service_account_token = "true"
         service_account_name             = "speaker"
         termination_grace_period_seconds = 0
         host_network                     = "true"
@@ -206,6 +207,7 @@ resource "kubernetes_deployment" "metallb-deployment" {
   }
   spec {
     revision_history_limit = 3
+
     selector {
       match_labels = {
         app       = "metallb"
@@ -224,6 +226,7 @@ resource "kubernetes_deployment" "metallb-deployment" {
         }
       }
       spec {
+        automount_service_account_token = "true"
         service_account_name             = "controller"
         termination_grace_period_seconds = 0
         security_context {
