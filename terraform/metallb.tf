@@ -12,7 +12,7 @@ resource "kubernetes_service_account" "metallb-serviceaccount-controller" {
     name = "controller"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
-      app = "metallb"
+      app = "${kubernetes_namespace.metallb-namespace.metadata.labels.app}"
     }
   }
 }
@@ -108,8 +108,8 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-controller" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = "controller"
-    namespace = "metallb-system"
+    name      = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
   }
 }
 
@@ -128,14 +128,14 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-speaker" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = "speaker"
-    namespace = "metallb-system"
+    name      = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
   }
 }
 
 resource "kubernetes_role_binding" "metallb-rolebinding" {
   metadata {
-    namespace = "metallb-system"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     name      = "config-watcher"
     labels = {
       app = "metallb"
@@ -159,7 +159,7 @@ resource "kubernetes_role_binding" "metallb-rolebinding" {
 resource "kubernetes_daemonset" "metallb-daemonset" {
   metadata {
     name      = "speaker"
-    namespace = "metallb-system"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
       app       = "metallb"
       component = "speaker"
@@ -185,7 +185,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
       }
       spec {
         automount_service_account_token = "true"
-        service_account_name             = "speaker"
+        service_account_name             = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
         termination_grace_period_seconds = 0
         host_network                     = "true"
         container {
@@ -227,7 +227,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
 
 resource "kubernetes_deployment" "metallb-deployment" {
   metadata {
-    namespace = "metallb-system"
+    namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     name      = "controller"
     labels = {
       app       = "metallb"
@@ -256,7 +256,7 @@ resource "kubernetes_deployment" "metallb-deployment" {
       }
       spec {
         automount_service_account_token = "true"
-        service_account_name             = "controller"
+        service_account_name             = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
         termination_grace_period_seconds = 0
         security_context {
           run_as_non_root = "true"
