@@ -153,7 +153,6 @@ resource "kubernetes_role_binding" "metallb-rolebinding" {
   subject {
     kind = "ServiceAccount"
     name = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
-"
   }
 }
 
