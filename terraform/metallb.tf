@@ -9,20 +9,20 @@ resource "kubernetes_namespace" "metallb-namespace" {
 
 resource "kubernetes_service_account" "metallb-serviceaccount-controller" {
   metadata {
-    name = "controller"
+    name      = "controller"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
-      app = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      app = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
     }
   }
 }
 
 resource "kubernetes_service_account" "metallb-serviceaccount-speaker" {
   metadata {
-    name = "speaker"
+    name      = "speaker"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
-      app = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      app = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
     }
   }
 }
@@ -31,7 +31,7 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-controller" {
   metadata {
     name = "metallb-system-controller"
     labels = {
-      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
       component = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
     }
   }
@@ -59,7 +59,7 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-speaker" {
   metadata {
     name = "metallb-system-speaker"
     labels = {
-      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
       component = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
     }
   }
@@ -76,7 +76,7 @@ resource "kubernetes_role" "metallb-role" {
     name      = "config-watcher"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
-      app = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      app = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
     }
   }
 
@@ -97,7 +97,7 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-controller" {
   metadata {
     name = "metallb-system-controller"
     labels = {
-      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
       component = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
     }
   }
@@ -117,7 +117,7 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-speaker" {
   metadata {
     name = "metallb-system-speaker"
     labels = {
-      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
       component = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
     }
   }
@@ -138,7 +138,7 @@ resource "kubernetes_role_binding" "metallb-rolebinding" {
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     name      = "config-watcher"
     labels = {
-      app = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      app = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
     }
   }
   role_ref {
@@ -161,21 +161,21 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
     name      = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     labels = {
-      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
       component = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
     }
   }
   spec {
     selector {
       match_labels = {
-        app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+        app       = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
         component = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
       }
     }
     template {
       metadata {
         labels = {
-          app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+          app       = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
           component = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
         }
         annotations = {
@@ -184,7 +184,7 @@ resource "kubernetes_daemonset" "metallb-daemonset" {
         }
       }
       spec {
-        automount_service_account_token = "true"
+        automount_service_account_token  = "true"
         service_account_name             = "${kubernetes_service_account.metallb-serviceaccount-speaker.metadata.0.name}"
         termination_grace_period_seconds = 0
         host_network                     = "true"
@@ -230,7 +230,7 @@ resource "kubernetes_deployment" "metallb-deployment" {
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
     name      = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
     labels = {
-      app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+      app       = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
       component = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
     }
   }
@@ -239,14 +239,14 @@ resource "kubernetes_deployment" "metallb-deployment" {
 
     selector {
       match_labels = {
-        app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+        app       = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
         component = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
       }
     }
     template {
       metadata {
         labels = {
-          app       = "${kubernetes_namespace.metallb-namespace.metadata.labels.0.app}"
+          app       = "${kubernetes_namespace.metallb-namespace.metadata[0].labels.app}"
           component = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
         }
         annotations = {
@@ -255,7 +255,7 @@ resource "kubernetes_deployment" "metallb-deployment" {
         }
       }
       spec {
-        automount_service_account_token = "true"
+        automount_service_account_token  = "true"
         service_account_name             = "${kubernetes_service_account.metallb-serviceaccount-controller.metadata.0.name}"
         termination_grace_period_seconds = 0
         security_context {
