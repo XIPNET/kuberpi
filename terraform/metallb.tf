@@ -2,7 +2,7 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-controller" {
   metadata {
     name = "metallb-system-controller"
     labels = {
-      app = "metallb"
+      app       = "metallb"
       component = "controller"
     }
   }
@@ -30,7 +30,7 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-speaker" {
   metadata {
     name = "metallb-system-speaker"
     labels = {
-      app = "metallb"
+      app       = "metallb"
       component = "speaker"
     }
   }
@@ -68,7 +68,7 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-controller" {
   metadata {
     name = "metallb-system-controller"
     labels = {
-      app = "metallb"
+      app       = "metallb"
       component = "controller"
     }
   }
@@ -88,7 +88,7 @@ resource "kubernetes_cluster_role_binding" "metallb-rolebinding-speaker" {
   metadata {
     name = "metallb-system-speaker"
     labels = {
-      app = "metallb"
+      app       = "metallb"
       component = "speaker"
     }
   }
