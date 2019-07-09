@@ -296,6 +296,6 @@ resource "kubernetes_config_map" "metallb-configmap" {
     namespace = "${kubernetes_namespace.metallb-namespace.metadata.0.name}"
   }
   data = {
-    config = "${file(${path.module}/metallb-config.yaml)}"
+    config = "${file("${path.module}/metallb-config.yaml")}"
   }
 }
