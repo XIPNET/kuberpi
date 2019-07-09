@@ -8,7 +8,7 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-controller" {
 
   rule {
     api_groups = [""]
-    resources  = ["services"]
+    resources  = ["services", "secrets"]
     verbs      = ["get", "list", "watch", "update"]
   }
 
@@ -35,7 +35,7 @@ resource "kubernetes_cluster_role" "metallb-clusterrole-speaker" {
 
   rule {
     api_groups = [""]
-    resources  = ["services", "endpoints", "nodes"]
+    resources  = ["services", "endpoints", "nodes", "secrets"]
     verbs      = ["get", "list", "watch"]
   }
 }
@@ -51,7 +51,7 @@ resource "kubernetes_role" "metallb-role" {
 
   rule {
     api_groups = [""]
-    resources  = ["configmaps"]
+    resources  = ["configmaps", "secrets"]
     verbs      = ["get", "list", "watch"]
   }
 
