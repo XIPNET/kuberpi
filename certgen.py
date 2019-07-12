@@ -1,7 +1,5 @@
 #!/usr/bin/python
-import readline
 import os
-import time
 
 user = raw_input("Enter your username: ")
 group = raw_input("Enter your RBAC group: ")
