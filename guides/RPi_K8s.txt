@@ -67,10 +67,12 @@ helm install stable/grafana --name=grafana --set service.type=LoadBalancer,persi
 kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 add downloaded and extracted plugins to persistent volume /mnt/md0/[name]/plugins, then restart pod
 
+--Simple Web app
+kubectl run hypriot --image=hypriot/rpi-busybox-httpd --replicas=3 --port=80
+kubectl expose deployment hypriot --port 80
 
---Prometheus Operator
-https://github.com/coreos/prometheus-operator.git
-kubectl create -f bundle.yaml
+
+
 
 
 
