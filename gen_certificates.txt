@@ -1,0 +1,25 @@
+# This file will be used as a guide for creating client certificates for remotely accessing the API via TLS
+# Guide https://sysdig.com/blog/kubernetes-security-rbac-tls/
+# This example is creating a cert for Terraform
+## Create new private key
+openssl genrsa -out terraform.key 2048
+
+## Create CSR
+openssl req -new -key terraform.key -out terraform.csr -subj "/CN=terraform/O=kuberpi"
+
+## Sign CSR
+openssl x509 -req -in terraform.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out terraform.crt
+
+## Register credentials to user
+kubectl config set-credentials terraform --client-certificate=/terraform.crt --client-key=/terraform.key --embed-cert=true
+
+## Set config context
+kubectl config set-context terraform@kubernetes --cluster=kubernetes --user=terraform
+
+## Assign RBAC Permissions
+kubectl create clusterrolebinding terraform-admin-binding --clusterrole=cluster-admin --group=kuberpi
+
+## Test new context
+## Should successfully list pods
+kubectl config use-context terraform@kubernetes
+kubectl get pods --all-namespaces
