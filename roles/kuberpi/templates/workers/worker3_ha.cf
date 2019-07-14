@@ -1,0 +1,26 @@
+#       keepalive: how many seconds between heartbeats
+#
+keepalive 1
+#
+#       deadtime: seconds-to-declare-host-dead
+#
+deadtime 3
+#
+#       What UDP port to use for udp or ppp-udp communication?
+#
+udpport        695
+bcast  eth0
+mcast eth0 225.0.1.1 695 1 0
+ucast eth0 10.10.0.5
+#       What interfaces to heartbeat over?
+udp     eth0
+#
+#       Facility to use for syslog()/logger (alternative to log/debugfile)
+#
+logfacility     local0
+#
+#       Tell what machines are in the cluster
+#       node    nodename ...    -- must match uname -n
+node    worker1
+node    worker2
+node	worker3

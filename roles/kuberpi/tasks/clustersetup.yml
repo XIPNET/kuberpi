@@ -1,0 +1,43 @@
+- name: Curl GPG Key
+  become: true
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+- name: Add Repository
+  become: true
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes.list
+
+- name: Install Kubeadm
+  become: true
+  apt:
+    name: kubeadm
+
+- name: Install Kubectl
+  become: true
+  apt:
+    name: kubectl
+
+- name: Install Kubelet
+  become: true
+  apt:
+    name: kubelet
+
+- name: Reload Daemon
+  become: yes
+  command: systemctl daemon-reload
+
+- name: Pull K8s Images
+  command: 'kubeadm config images pull v3'
+  when: inventory_hostname == 'master1' or inventory_hostname == 'master2'
+
+- name: Install Heartbeat
+  become: true
+  when: inventory_hostname != 'master1' or inventory_hostname != 'master2'
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - heartbeat
