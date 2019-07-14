@@ -1,0 +1,106 @@
+- name: Install Heartbeat and HAProxy
+  become: true
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - heartbeat
+    - haproxy
+    - haveged
+
+- name: Find Original HAProxy File
+  become: true
+  stat: path=/etc/haproxy/haproxy.cfg
+  register: file_status
+
+- name: Copy Original HAProxy File
+  become: true
+  command: mv /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.orig
+  when: file_status.stat.exists
+
+- name: Copy HAProxy Config Files
+  become: true
+  template:
+    src: ../templates/loadbalancers/haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+
+- name: Set Sysctl
+  become: true
+  sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: 1
+    state: present
+    reload: yes
+
+- name: Restart HAProxy
+  become: yes
+  service:
+    name: haproxy
+    state: restarted
+
+- name: Copy LB1 Heartbeat Files
+  become: yes
+  when: inventory_hostname == 'lb1'
+  template:
+    src: ../templates/loadbalancers/lb1_ha.cf
+    dest: /etc/ha.d/ha.cf
+    owner: root
+    group: root
+    mode: 600
+
+- name: Copy LB2 Heartbeat Files
+  become: yes
+  when: inventory_hostname == 'lb2'
+  template:
+    src: ../templates/loadbalancers/lb2_ha.cf
+    dest: /etc/ha.d/ha.cf
+    owner: root
+    group: root
+
+- name: Copy Heartbeat Auth Files
+  become: yes
+  template:
+    src: ../templates/loadbalancers/authkeys
+    dest: /etc/ha.d/authkeys
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Copy HAResources Files
+  become: yes
+  template:
+    src: ../templates/loadbalancers/haresources
+    dest: /etc/ha.d/haresources
+
+- name: Restart Heartbeat
+  become: yes
+  service:
+    name: heartbeat
+    state: restarted
+
+- name: Enable Heartbeat at boot
+  become: yes
+  systemd:
+    name: heartbeat
+    enabled: yes
+    masked: no
+
+- name: Enable HAProxy at boot
+  become: yes
+  systemd:
+    name: haproxy
+    enabled: yes
+    masked: no
+
+- name: Modify Heartbeat systemd
+  become: yes
+  lineinfile:
+    path: /lib/systemd/system/heartbeat.service
+    regexp: '^Restart='
+    line: 'Restart=on-failure'
+
+- name: Reboot
+  become: true
+  reboot:

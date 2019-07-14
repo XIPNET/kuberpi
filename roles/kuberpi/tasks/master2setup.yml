@@ -1,0 +1,26 @@
+- name: Generate join command pt. 1
+  become: true
+  when: inventory_hostname == 'master1'
+  command: kubeadm token create --print-join-command
+  register: kubeadm_token
+  tags: generate_join
+
+- name: Generate join command pt. 2
+  become: true
+  when: inventory_hostname == 'master1'
+  command: kubeadm init phase upload-certs --upload-certs
+  register: kubeadm_certs
+  tags: generate_join
+
+- name: Copy Control-Plane Join Manifest
+  when: inventory_hostname == 'master2'
+  template:
+    src: ../templates/masters/master-join.sh
+    dest: /home/pirate/master-join.sh
+  tags: generate_join
+
+- name: Kubeadm Join
+  become: true
+  when: inventory_hostname == 'master2'
+  command: bash /home/pirate/master-join.sh
+  tags: kubeadm_join

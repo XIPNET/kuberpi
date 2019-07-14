@@ -1,0 +1,15 @@
+- name: Copy Join Script
+  template:
+    src: ../templates/workers/join-command.sh
+    dest: $HOME/join-command.sh
+
+- name: Add Sudo
+  replace:
+    path: $HOME/join-command.sh
+    regexp: 'kubeadm'
+    replace: 'sudo kubeadm'
+    backup: yes
+
+- name: Kubeadm Join
+  command: bash $HOME/join-command.sh
+  tags: kubeadm_join

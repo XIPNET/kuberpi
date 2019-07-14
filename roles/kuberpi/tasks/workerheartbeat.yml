@@ -1,0 +1,74 @@
+- name: Set Sysctl
+  become: true
+  sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: 1
+    state: present
+    reload: yes
+
+- name: Copy Worker1 Heartbeat Files
+  become: yes
+  when: inventory_hostname == 'worker1'
+  template:
+    src: ../templates/workers/worker1_ha.cf
+    dest: /etc/ha.d/ha.cf
+    owner: root
+    group: root
+    mode: 600
+
+- name: Copy Worker2 Heartbeat Files
+  become: yes
+  when: inventory_hostname == 'worker2'
+  template:
+    src: ../templates/workers/worker2_ha.cf
+    dest: /etc/ha.d/ha.cf
+    owner: root
+    group: root
+
+- name: Copy Worker3 Heartbeat Files
+  become: yes
+  when: inventory_hostname == 'worker3'
+  template:
+    src: ../templates/workers/worker3_ha.cf
+    dest: /etc/ha.d/ha.cf
+    owner: root
+    group: root
+
+- name: Copy Heartbeat Auth Files
+  become: yes
+  template:
+    src: ../templates/workers/authkeys
+    dest: /etc/ha.d/authkeys
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Copy HAResources Files
+  become: yes
+  template:
+    src: ../templates/workers/haresources
+    dest: /etc/ha.d/haresources
+
+- name: Restart Heartbeat
+  become: yes
+  service:
+    name: heartbeat
+    state: restarted
+
+- name: Enable Heartbeat at boot
+  become: yes
+  systemd:
+    name: heartbeat
+    enabled: yes
+    masked: no
+
+- name: Modify Heartbeat systemd
+  become: yes
+  lineinfile:
+    path: /lib/systemd/system/heartbeat.service
+    regexp: '^Restart='
+    line: 'Restart=on-failure'
+
+- name: Reboot
+  become: true
+  reboot:
