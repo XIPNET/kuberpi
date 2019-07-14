@@ -10,7 +10,8 @@
 - name: Install Packages
   become: true
   apt:
-    name: "{{ packages }}"
+    name: "{{ item }}"
+  loop: "{{ baseline_packages }}"
 
 - name: Disable Swap_1
   become: true

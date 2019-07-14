@@ -1,6 +1,6 @@
 ---
 # vars file for baseline
-- packages:
+baseline_packages:
   - nfs-common
   - nfs-server
   - dphys-swapfile

@@ -2,4 +2,4 @@
 - hosts: all
   tasks:
   - include_role:
-      name: kubernetes
+      name: ../roles/kuberpi

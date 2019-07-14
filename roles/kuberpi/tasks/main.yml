@@ -1,0 +1,4 @@
+---
+# tasks file for baseline
+- name: Baseline Nodes
+  import_tasks: baseline.yml
