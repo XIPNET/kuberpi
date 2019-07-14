@@ -1,2 +1,8 @@
 ---
 # vars file for baseline
+- packages:
+  - nfs-common
+  - nfs-server
+  - dphys-swapfile
+  - vim
+  - ntp
