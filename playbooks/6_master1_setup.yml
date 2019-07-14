@@ -6,7 +6,7 @@
   tasks:
     - name: Copy kubeadm-config.yaml
       template:
-        src: templates/masters/kubeadm-config.yaml
+        src: ../templates/masters/kubeadm-config.yaml
         dest: /home/pirate/kubeadm-config.yaml
 
     - name: Kubeadm init Master1
@@ -36,7 +36,7 @@
 
     - name: Copy Weave Network Manifest
       template:
-        src: templates/masters/weave.sh
+        src: ../templates/masters/weave.sh
         dest: $HOME/weave.sh
       tags: kubectl_network_manifest
 

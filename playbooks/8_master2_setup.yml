@@ -21,7 +21,7 @@
     - name: Copy Control-Plane Join Manifest
       when: inventory_hostname == 'master2'
       template:
-        src: templates/masters/master-join.sh
+        src: ../templates/masters/master-join.sh
         dest: /home/pirate/master-join.sh
       tags: generate_join
 

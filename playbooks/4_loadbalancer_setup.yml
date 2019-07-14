@@ -27,7 +27,7 @@
     - name: Copy HAProxy Config Files
       become: true
       template:
-        src: templates/loadbalancers/haproxy.cfg
+        src: ../templates/loadbalancers/haproxy.cfg
         dest: /etc/haproxy/haproxy.cfg
         owner: root
         group: root
@@ -50,7 +50,7 @@
       become: yes
       when: inventory_hostname == 'lb1'
       template:
-        src: templates/loadbalancers/lb1_ha.cf
+        src: ../templates/loadbalancers/lb1_ha.cf
         dest: /etc/ha.d/ha.cf
         owner: root
         group: root
@@ -60,7 +60,7 @@
       become: yes
       when: inventory_hostname == 'lb2'
       template:
-        src: templates/loadbalancers/lb2_ha.cf
+        src: ../templates/loadbalancers/lb2_ha.cf
         dest: /etc/ha.d/ha.cf
         owner: root
         group: root
@@ -68,7 +68,7 @@
     - name: Copy Heartbeat Auth Files
       become: yes
       template:
-        src: templates/loadbalancers/authkeys
+        src: ../templates/loadbalancers/authkeys
         dest: /etc/ha.d/authkeys
         owner: root
         group: root
@@ -77,7 +77,7 @@
     - name: Copy HAResources Files
       become: yes
       template:
-        src: templates/loadbalancers/haresources
+        src: ../templates/loadbalancers/haresources
         dest: /etc/ha.d/haresources
 
     - name: Restart Heartbeat

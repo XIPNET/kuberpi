@@ -6,7 +6,7 @@
   tasks:
     - name: Copy Join Script
       template:
-        src: ./templates/workers/join-command.sh
+        src: ../templates/workers/join-command.sh
         dest: $HOME/join-command.sh
 
     - name: Add Sudo
