@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: lb1
   tasks:
   - include_role:
       name: ../roles/kuberpi
