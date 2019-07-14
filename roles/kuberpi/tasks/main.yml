@@ -4,31 +4,39 @@
 ## Baseline Nodes
 - name: Baseline Nodes
   import_tasks: baseline.yml
+  when: inventory_hostname in groups['all']
 
 ## Install prometheus node exporter
 - name: Install Node Exporter
   import_tasks: nodeexporter.yml
+  when: inventory_hostname in groups['all']
 
 ## Setup initial Kubernetes services
 - name: Kubernetes Initial Setup
   import_tasks: clustersetup.yml
+  when: inventory_hostname in groups['cluster']
 
 ## Setup loadlanacers HAPRoxy and Heartbeat services
 - name: Loadbalancer Setup
   import_tasks: loadbalancersetup.yml
+  when: inventory_hostname in groups['loadbalancers']
 
 ## Setup worker Heartbeat services
 - name: Worker Heartbeat Setup
   import_tasks: workersetup.yml
+  when: inventory_hostname in groups['workers']
 
 ## Kube init on Master1 and export required files to join workers
 - name: Master1 Setup
   import_tasks: master1setup.yml
+  when: inventory_hostname == 'master1'
 
 ## Kubeadm join for worker nodes
 - name: Worker Node Setup
   import_tasks: workersetup.yml
+  when: inventory_hostname in groups['workers']
 
 ## Kube init on Master2
 - name: Master2 Setup
   import_tasks: master2setup.yml
+  when: inventory_hostname == 'master2'
