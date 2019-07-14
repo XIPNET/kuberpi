@@ -1,4 +1,10 @@
 ---
-# tasks file for baseline
+# Tasks file for kubernetes cluster instantiation
+
+## Baseline Nodes
 - name: Baseline Nodes
   import_tasks: baseline.yml
+
+## Install prometheus node exporter
+- name: Install Node Exporter
+  import_tasks: nodeexporter.yml

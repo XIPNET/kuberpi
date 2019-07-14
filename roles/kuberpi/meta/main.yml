@@ -1,7 +1,6 @@
 galaxy_info:
-  author: your name
-  description: your description
-  company: your company (optional)
+  author: CastIronClay
+  description: This ansible role is used to provision a Kubernetes cluster on 7 Raspberry Pis
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
