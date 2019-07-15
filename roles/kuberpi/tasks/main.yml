@@ -5,6 +5,7 @@
 - name: Baseline Nodes
   import_tasks: baseline.yml
   when: inventory_hostname in groups['all']
+  tags: baseline
 
 ## Install prometheus node exporter
 - name: Install Node Exporter
