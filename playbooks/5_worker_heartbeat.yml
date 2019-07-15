@@ -75,6 +75,14 @@
         regexp: '^Restart='
         line: 'Restart=on-failure'
 
+    - name: Set Sysctl
+      become: true
+      sysctl:
+        name: net.ipv4.ip_nonlocal_bind
+        value: 1
+        state: present
+        reload: yes
+
     - name: Reboot
       become: true
       reboot:
