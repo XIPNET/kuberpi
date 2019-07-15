@@ -1,3 +1,4 @@
+- name: Kubeadm Init
 - name: Copy kubeadm-config.yaml
   template:
     src: ../templates/masters/kubeadm-config.yaml
@@ -44,6 +45,6 @@
   tags: kubeadm_command
 
 - name: Copy join command to local file
-  local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./templates/workers/join-command.sh"
+  local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="../templates/workers/join-command.sh"
   tags: kubeadm_command
 

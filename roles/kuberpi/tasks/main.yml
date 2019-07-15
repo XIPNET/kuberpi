@@ -23,7 +23,7 @@
 
 ## Setup worker Heartbeat services
 - name: Worker Heartbeat Setup
-  import_tasks: workersetup.yml
+  import_tasks: workerheartbeat.yml
   when: inventory_hostname in groups['workers']
 
 ## Kube init on Master1 and export required files to join workers
