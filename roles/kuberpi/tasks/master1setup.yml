@@ -9,6 +9,7 @@
   template:
     src: ../templates/masters/kubeadm-config.yaml
     dest: /home/pirate/kubeadm-config.yaml
+  with_items: "{{ ip }}"
 
 - name: Kubeadm init Master1
   become: yes
