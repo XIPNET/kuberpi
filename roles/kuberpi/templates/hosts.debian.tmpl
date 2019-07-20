@@ -15,13 +15,13 @@ you need to add the following to config:
 {# The value '{{hostname}}' will be replaced with the local-hostname -#}
 127.0.1.1 {{fqdn}} {{hostname}}
 127.0.0.1 localhost
-10.10.0.1	master1
-10.10.0.2	master2
-10.10.0.3	worker1
-10.10.0.4	worker2
-10.10.0.5	worker3
-10.10.0.6	lb1
-10.10.0.7	lb2
+{{ item.master1 }}	master1
+{{ item.master2 }}	master2
+{{ item.worker1 }}	worker1
+{{ item.worker2 }}	worker2
+{{ item.worker3 }}	worker3
+{{ item.lb1 }}	lb1
+{{ item.lb2 }}	lb2
 
 # The following lines are desirable for IPv6 capable hosts
 ::1 ip6-localhost ip6-loopback

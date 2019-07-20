@@ -6,6 +6,7 @@
   import_tasks: baseline.yml
   when: inventory_hostname in groups['all']
   tags: baseline
+  with_items: "{{ ip }}"
 
 ## Install prometheus node exporter
 - name: Install Node Exporter
