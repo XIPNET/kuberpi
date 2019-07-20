@@ -6,3 +6,15 @@ baseline_packages:
   - dphys-swapfile
   - vim
   - ntp
+
+ip:
+  - master1_ip: 192.168.86.164
+    master2_ip: 192.168.86.163
+    worker1_ip: 192.168.86.160
+    worker2_ip: 192.168.86.158
+    worker3_ip: 192.168.86.159
+    lb1_ip: 192.168.86.161
+    lb2_ip: 192.168.86.162
+    kubernetes: 192.168.86.100
+    lb_heartbeat: 192.168.86.100
+    worker_heartbeat: 192.168.86.101
