@@ -3,7 +3,7 @@
 
 ## Baseline Nodes
 - name: Baseline Nodes
-  import_tasks: baseline.yml
+  include_tasks: baseline.yml
   when: inventory_hostname in groups['all']
   tags: baseline
   with_items: "{{ ip }}"
@@ -20,13 +20,13 @@
 
 ## Setup loadlanacers HAPRoxy and Heartbeat services
 - name: Loadbalancer Setup
-  import_tasks: loadbalancersetup.yml
+  include_tasks: loadbalancersetup.yml
   when: inventory_hostname in groups['loadbalancers']
   with_items: "{{ ip }}"
 
 ## Setup worker Heartbeat services
 - name: Worker Heartbeat Setup
-  import_tasks: workerheartbeat.yml
+  include_tasks: workerheartbeat.yml
   when: inventory_hostname in groups['workers']
   with_items: "{{ ip }}"
 
