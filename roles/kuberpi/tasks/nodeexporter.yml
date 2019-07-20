@@ -1,4 +1,3 @@
----
 # tasks file for install prometheus node exporter
 - name: Current Service Check
   stat:

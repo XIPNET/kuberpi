@@ -2,9 +2,11 @@
   stat:
     path: $HOME/.kube/config
   register: kube_config
+
 - fail:
     msg: Ending this playbook. Kubeadm Init already completed
   when: kube_config.stat.exists == True
+
 - name: Copy kubeadm-config.yaml
   template:
     src: ../templates/masters/kubeadm-config.yaml
