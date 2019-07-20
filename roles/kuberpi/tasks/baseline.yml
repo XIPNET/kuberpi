@@ -33,13 +33,12 @@
 
 - name: Copy Cloud Host File
   become: yes
-  copy:
+  template:
     src: templates/hosts.debian.tmpl
     dest: /etc/cloud/templates/hosts.debian.tmpl
     owner: root
     group: root
     mode: '0644'
-  with_items: "{{ ip }}"
 
 - name: Set Hostnames
   become: true
