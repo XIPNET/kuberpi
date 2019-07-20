@@ -4,7 +4,7 @@ galaxy_info:
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
-  # issue_tracker_url: http://example.com/issue/tracker
+  issue_tracker_url: https://github.com/XIPNET/kuberpi/issues
 
   # Some suggested licenses:
   # - BSD (default)
@@ -26,7 +26,7 @@ galaxy_info:
   # this branch. If Travis integration is configured, only notifications for this
   # branch will be accepted. Otherwise, in all cases, the repo's default branch
   # (usually master) will be used.
-  #github_branch:
+  github_branch: master
 
   #
   # Provide a list of supported platforms, and for each platform a list of versions.
@@ -34,17 +34,10 @@ galaxy_info:
   # To view available platforms and versions (or releases), visit:
   # https://galaxy.ansible.com/api/v1/platforms/
   #
-  # platforms:
-  # - name: Fedora
-  #   versions:
-  #   - all
-  #   - 25
-  # - name: SomePlatform
-  #   versions:
-  #   - all
-  #   - 1.0
-  #   - 7
-  #   - 99.99
+  platforms:
+    - name: HypriotOS
+      versions:
+        - 1.10
 
   galaxy_tags: []
     # List tags for your role here, one per line. A tag is a keyword that describes
