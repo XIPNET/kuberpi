@@ -1,11 +1,11 @@
 [all]
-master1 ansible_ssh_host=10.10.0.1
-master2 ansible_ssh_host=10.10.0.2
-worker1 ansible_ssh_host=10.10.0.3
-worker2 ansible_ssh_host=10.10.0.4
-worker3 ansible_ssh_host=10.10.0.5
-lb1 ansible_ssh_host=10.10.0.6
-lb2 ansible_ssh_host=10.10.0.7
+master1 ansible_ssh_host=master1
+master2 ansible_ssh_host=master2
+worker1 ansible_ssh_host=worker1
+worker2 ansible_ssh_host=worker2
+worker3 ansible_ssh_host=worker3
+lb1 ansible_ssh_host=lb1
+lb2 ansible_ssh_host=lb2
 
 [cluster]
 master1
@@ -31,3 +31,5 @@ master2
 ansible_connection=ssh
 ansible_user=pirate
 ansible_ssh_pass=hypriot
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
