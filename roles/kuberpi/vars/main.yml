@@ -6,6 +6,8 @@ baseline_packages:
   - dphys-swapfile
   - vim
   - ntp
+  - heartbeat
+  - haproxy
 
 ip:
   - master1: 192.168.86.164

@@ -32,12 +32,3 @@
 - name: Pull K8s Images
   command: 'kubeadm config images pull v3'
   when: inventory_hostname == 'master1' or inventory_hostname == 'master2'
-
-- name: Install Heartbeat
-  become: true
-  when: inventory_hostname != 'master1' or inventory_hostname != 'master2'
-  apt:
-    name: "{{ packages }}"
-  vars:
-    packages:
-    - heartbeat

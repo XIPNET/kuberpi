@@ -22,11 +22,13 @@
 - name: Loadbalancer Setup
   import_tasks: loadbalancersetup.yml
   when: inventory_hostname in groups['loadbalancers']
+  with_items: "{{ ip }}"
 
 ## Setup worker Heartbeat services
 - name: Worker Heartbeat Setup
   import_tasks: workerheartbeat.yml
   when: inventory_hostname in groups['workers']
+  with_items: "{{ ip }}"
 
 ## Kube init on Master1 and export required files to join workers
 - name: Master1 Setup

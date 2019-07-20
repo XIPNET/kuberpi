@@ -1,13 +1,3 @@
-- name: Install Heartbeat and HAProxy
-  become: true
-  apt:
-    name: "{{ packages }}"
-  vars:
-    packages:
-    - heartbeat
-    - haproxy
-    - haveged
-
 - name: Find Original HAProxy File
   become: true
   stat: path=/etc/haproxy/haproxy.cfg

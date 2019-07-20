@@ -1,5 +1,5 @@
 apiVersion: kubeadm.k8s.io/v1beta1
 kind: ClusterConfiguration
 kubernetesVersion: stable
-controlPlaneEndpoint: "10.10.0.100:6443"
+controlPlaneEndpoint: "{{ item.kubernetes }}:6443"
 tokenTTL: "0s"
