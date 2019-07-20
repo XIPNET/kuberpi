@@ -7,7 +7,7 @@
 
 - fail:
     msg: Ending this playbook. Node Exporter already installed
-      when: node_exporter_present.stat.exists == True
+  when: node_exporter_present.stat.exists == True
 
 - name: Retrieve and Unarchive Binary
   unarchive:
