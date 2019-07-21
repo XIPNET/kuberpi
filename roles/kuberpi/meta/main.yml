@@ -35,9 +35,7 @@ galaxy_info:
   # https://galaxy.ansible.com/api/v1/platforms/
   #
   platforms:
-    - name: HypriotOS
-      versions:
-        - 1.10
+    - name: Debian
 
   galaxy_tags: []
     # List tags for your role here, one per line. A tag is a keyword that describes
