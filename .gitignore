@@ -9,5 +9,4 @@ terraform/.terraform/
 terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
 .idea/
-roles/kuberpi/
-
+roles/kuberpi-role/
