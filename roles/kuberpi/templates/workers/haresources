@@ -1,1 +1,0 @@
-worker1 {{ item.worker_heartbeat }}

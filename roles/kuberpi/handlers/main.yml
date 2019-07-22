@@ -1,5 +1,0 @@
----
-# handlers file for baseline
-- name: Reboot
-  become: true
-  reboot:
