@@ -50,6 +50,6 @@
       tags: kubeadm_command
 
     - name: Copy join command to local file
-      local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./templates/workers/join-command.sh"
+      command: copy content="{{ join_command.stdout_lines[0] }}" dest="./templates/workers/join-command.sh"
+      delegate_to: localhost
       tags: kubeadm_command
-
