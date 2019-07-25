@@ -1,64 +1,25 @@
 ---
 - name: Baseline Nodes
   user: pirate
-  hosts: all
+  hosts: lb2
 
   tasks:
     - name: Update and upgrade apt packages
       become: true
       apt:
-        upgrade: yes
         update_cache: yes
-      tags: update
 
-    - name: Install Packages
+    - name: Check Docker apt-mark hold
+      command: apt-mark showhold -v
+      register: docker_hold
+
+    - name: Hold Docker Version
+      become: true
+      command: aptitude hold docker-ce
+      when: '"docker-ce" not in docker_hold.stdout'
+
+    - name: Update and upgrade apt packages
       become: true
       apt:
-        name: "{{ packages }}"
-      vars:
-        packages:
-        - nfs-common
-        - nfs-server
-        - dphys-swapfile
-        - vim
-        - ntp
-
-    - name: Reboot
-      become: true
-      reboot:
-      tags: reboot
-
-    - name: Disable Swap_1
-      become: true
-      command: dphys-swapfile swapoff
-    
-    - name: Disable Swap_2
-      become: true
-      command: dphys-swapfile uninstall
-    
-    - name: Disable Swap_3
-      become: true
-      command: systemctl disable dphys-swapfile
-   
-    - name: Set Authorized Keys
-      authorized_key:
-        user: pirate
-        state: present
-        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
-
-    - name: Copy Cloud Host File
-      become: yes
-      copy:
-        src: ../templates/hosts.debian.tmpl
-        dest: /etc/cloud/templates/hosts.debian.tmpl
-        owner: root
-        group: root
-        mode: '0644'
-
-    - name: Set Hostnames
-      become: true
-      hostname: name={{ inventory_hostname }}
-
-    - name: Reboot
-      become: true
-      reboot:
+        upgrade: yes
+        update_cache: yes
