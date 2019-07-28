@@ -10,4 +10,6 @@ terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
 .idea/
 roles/kuberpi-role/
-roles/kuberpi/
+roles/prometheus-node-exporter/
+roles/hypriot-baseline/
+roles/heartbeat-haproxy/
